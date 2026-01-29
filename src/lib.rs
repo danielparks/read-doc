@@ -33,11 +33,11 @@ impl Parse for IncludeDocsInput {
     }
 }
 
-/// Read module documentation from at least one file.
+/// Read module documentation from files.
 ///
 /// This macro extracts inner doc comments (`//!`, `/*! */`, `#![doc = "..."]`)
-/// from at least one Rust source files and combines them into a single string
-/// literal, suitable for use with `#[doc = ...]`.
+/// from the passed Rust source files and combines them into a single string
+/// literal that can be used with `#[doc = ...]`.
 ///
 /// Each file’s module documentation will be separated by a blank line.
 ///
@@ -61,14 +61,6 @@ impl Parse for IncludeDocsInput {
 pub fn include_docs(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as IncludeDocsInput);
 
-    if input.paths.is_empty() {
-        return syn::Error::new(
-            Span::call_site(),
-            "Expected at least one file path",
-        )
-        .to_compile_error()
-        .into();
-    }
     let base_dir = match get_source_dir() {
         Ok(path) => path,
         Err(error) => return error.to_compile_error().into(),

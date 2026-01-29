@@ -4,8 +4,8 @@
 [![Crates.io](https://img.shields.io/crates/v/include-docs)][crates.io]
 
 This provides the `include_docs!("path1.rs", "path2.rs", ...)` macro, which
-reads module documentation from at least one source file. Paths are relative to
-the directory of the calling file.
+reads module documentation from Rust source files. Paths are relative to the
+directory of the calling file.
 
 If multiple files are specified, their module documentation will be separated by
 a blank line.

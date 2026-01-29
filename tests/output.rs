@@ -5,15 +5,14 @@ use include_docs::include_docs;
 
 // FIXME This causes a failure that `#[should_panic]` can’t catch.
 // #[test]
-// fn include_docs_zero_files() {
-//     assert!(include_docs!() == "");
-// }
-
-// FIXME This causes a failure that `#[should_panic]` can’t catch.
-// #[test]
 // fn include_docs_one_bad_file() {
 //     include_docs!("nonesuch.rs")
 // }
+
+#[test]
+fn include_docs_zero_files() {
+    assert!(include_docs!() == "");
+}
 
 #[test]
 fn include_docs_one_file() {
