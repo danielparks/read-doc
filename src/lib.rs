@@ -8,6 +8,7 @@
 use proc_macro::TokenStream;
 use proc_macro2::Span;
 use quote::quote;
+use std::fs;
 use std::path::{Path, PathBuf};
 use syn::{
     LitStr, Meta, Token, parse::Parse, parse::ParseStream, parse_macro_input,
@@ -61,38 +62,27 @@ pub fn include_docs(input: TokenStream) -> TokenStream {
     fn inner(input: &IncludeDocsInput) -> syn::Result<TokenStream> {
         let base_dir = get_source_dir()?;
 
-        let mut all_docs = Vec::new();
+        let docs = input
+            .paths
+            .iter()
+            .filter_map(|path_lit| {
+                let path = Path::new(&base_dir).join(path_lit.value());
+                fs::read_to_string(&path)
+                    .map_err(|error| error.to_string())
+                    .and_then(|content| extract_inner_docs(&content))
+                    .map(|docs| if docs.is_empty() { None } else { Some(docs) })
+                    .map_err(|error| {
+                        syn::Error::new(
+                            path_lit.span(),
+                            format!("Failed to read {path:?}: {error}"),
+                        )
+                    })
+                    .transpose()
+            })
+            .collect::<syn::Result<Vec<String>>>()?
+            .join("\n\n"); // FIXME all errors
 
-        for path_lit in &input.paths {
-            let path_str = path_lit.value();
-            let full_path = Path::new(&base_dir).join(&path_str);
-
-            let content =
-                std::fs::read_to_string(&full_path).map_err(|error| {
-                    syn::Error::new(
-                        path_lit.span(),
-                        format!("Failed to read {full_path:?}: {error}"),
-                    )
-                })?;
-
-            let docs = extract_inner_docs(&content).map_err(|error| {
-                syn::Error::new(
-                    path_lit.span(),
-                    format!("Failed to parse {full_path:?}: {error}"),
-                )
-            })?;
-
-            if !docs.is_empty() {
-                if !all_docs.is_empty() {
-                    all_docs.push(String::new()); // blank line separator
-                }
-                all_docs.push(docs);
-            }
-        }
-
-        let combined = all_docs.join("\n");
-        let lit = LitStr::new(&combined, Span::call_site());
-
+        let lit = LitStr::new(&docs, Span::call_site());
         Ok(quote! { #lit }.into())
     }
 
@@ -103,8 +93,13 @@ pub fn include_docs(input: TokenStream) -> TokenStream {
 }
 
 /// Extract inner doc comments from Rust source.
-fn extract_inner_docs(content: &str) -> syn::Result<String> {
-    Ok(syn::parse_file(content)?
+///
+/// # Errors
+///
+/// Returns an error if there was a problem parsing the file.
+fn extract_inner_docs(content: &str) -> Result<String, String> {
+    Ok(syn::parse_file(content)
+        .map_err(|error| error.to_string())?
         .attrs
         .into_iter()
         .filter_map(|attr| {
