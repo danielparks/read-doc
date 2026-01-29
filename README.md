@@ -2,6 +2,7 @@
 
 [![docs.rs](https://img.shields.io/docsrs/include-docs)][docs.rs]
 [![Crates.io](https://img.shields.io/crates/v/include-docs)][crates.io]
+![Rust version 1.88+](https://img.shields.io/badge/Rust%20version-1.88%2B-success)
 
 This provides the [`include_docs!("path1.rs", "path2.rs", ...)`][include_docs]
 macro, which reads module documentation from Rust source files.
@@ -69,6 +70,11 @@ pub struct Orange;
 ## Development status
 
 This is in active development. I am open to [suggestions][issues].
+
+## Minimum supported Rust version
+
+Currently the minimum supported Rust version (MSRV) is **1.88**. Future
+increases in the MSRV will require a major version bump.
 
 ## License
 

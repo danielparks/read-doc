@@ -1,4 +1,9 @@
 //! Read module documentation from Rust source files.
+//!
+//! # Minimum supported Rust version
+//!
+//! Currently the minimum supported Rust version (MSRV) is **1.88**. Future
+//! increases in the MSRV will require a major version bump.
 
 // Lint configuration in Cargo.toml isn't supported by cargo-geiger.
 #![forbid(unsafe_code)]
