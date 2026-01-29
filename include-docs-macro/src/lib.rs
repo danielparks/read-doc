@@ -1,13 +1,13 @@
 //! Proc macro implementation for include-docs.
 //!
-//! Provides [`include_module_docs!`] which extracts `//!` documentation from
+//! Provides [`include_module_docs!`] which extracts inner doc comments from
 //! a Rust source file at compile time.
 
 use proc_macro::TokenStream;
 use proc_macro2::Span;
 use quote::quote;
 use std::path::Path;
-use syn::{parse::Parse, parse::ParseStream, parse_macro_input, LitStr, Token};
+use syn::{parse::Parse, parse::ParseStream, parse_macro_input, Attribute, LitStr, Meta, Token};
 
 /// Input for the `include_module_docs!` macro.
 struct IncludeModuleDocsInput {
@@ -23,11 +23,11 @@ impl Parse for IncludeModuleDocsInput {
     }
 }
 
-/// Extract module-level documentation (`//!` comments) from a Rust source file.
+/// Extract module-level documentation from a Rust source file.
 ///
-/// This macro reads a Rust source file at compile time and extracts all the
-/// `//!` documentation comments from it, returning them as a string literal
-/// suitable for use with `#[doc = ...]`.
+/// This macro reads a Rust source file at compile time and extracts all inner
+/// doc comments (`//!`, `/*! */`, `#![doc = "..."]`) from it, returning them
+/// as a string literal suitable for use with `#[doc = ...]`.
 ///
 /// # Example
 ///
@@ -48,12 +48,9 @@ pub fn include_module_docs(input: TokenStream) -> TokenStream {
     let base_dir = match std::env::var("CARGO_MANIFEST_DIR") {
         Ok(dir) => dir,
         Err(_) => {
-            return syn::Error::new(
-                input.path.span(),
-                "CARGO_MANIFEST_DIR not set",
-            )
-            .to_compile_error()
-            .into();
+            return syn::Error::new(input.path.span(), "CARGO_MANIFEST_DIR not set")
+                .to_compile_error()
+                .into();
         }
     };
 
@@ -71,7 +68,18 @@ pub fn include_module_docs(input: TokenStream) -> TokenStream {
         }
     };
 
-    let docs = extract_module_docs(&content);
+    let docs = match extract_inner_docs(&content) {
+        Ok(d) => d,
+        Err(e) => {
+            return syn::Error::new(
+                input.path.span(),
+                format!("Failed to parse '{}': {e}", full_path.display()),
+            )
+            .to_compile_error()
+            .into();
+        }
+    };
+
     let lit = LitStr::new(&docs, Span::call_site());
 
     quote! { #lit }.into()
@@ -98,9 +106,9 @@ impl Parse for IncludeDocsInput {
 
 /// Include module documentation from multiple files.
 ///
-/// This macro extracts `//!` documentation comments from multiple Rust source
-/// files and combines them into a single string literal, suitable for use with
-/// `#[doc = ...]`.
+/// This macro extracts inner doc comments (`//!`, `/*! */`, `#![doc = "..."]`)
+/// from multiple Rust source files and combines them into a single string
+/// literal, suitable for use with `#[doc = ...]`.
 ///
 /// # Example
 ///
@@ -157,7 +165,18 @@ pub fn include_docs(input: TokenStream) -> TokenStream {
             }
         };
 
-        let docs = extract_module_docs(&content);
+        let docs = match extract_inner_docs(&content) {
+            Ok(d) => d,
+            Err(e) => {
+                return syn::Error::new(
+                    path_lit.span(),
+                    format!("Failed to parse '{}': {e}", full_path.display()),
+                )
+                .to_compile_error()
+                .into();
+            }
+        };
+
         if !docs.is_empty() {
             if !all_docs.is_empty() {
                 all_docs.push(String::new()); // blank line separator
@@ -172,34 +191,41 @@ pub fn include_docs(input: TokenStream) -> TokenStream {
     quote! { #lit }.into()
 }
 
-/// Extract `//!` doc comments from Rust source content.
-fn extract_module_docs(content: &str) -> String {
-    let mut docs = Vec::new();
-    let mut in_doc_block = false;
+/// Extract inner doc comments from Rust source content using syn.
+///
+/// This handles all forms of inner documentation:
+/// - `//! line doc`
+/// - `/*! block doc */`
+/// - `#![doc = "string"]`
+fn extract_inner_docs(content: &str) -> Result<String, syn::Error> {
+    // Parse as a file to get all the inner attributes
+    let file = syn::parse_file(content)?;
 
-    for line in content.lines() {
-        let trimmed = line.trim_start();
-        if let Some(doc) = trimmed.strip_prefix("//!") {
-            in_doc_block = true;
-            // Remove the leading space if present (standard formatting)
-            let doc_content = doc.strip_prefix(' ').unwrap_or(doc);
-            docs.push(doc_content.to_string());
-        } else if in_doc_block {
-            // Once we've started reading docs, stop at non-doc content
-            if !trimmed.is_empty() && !trimmed.starts_with("//") {
-                break;
-            }
-            // Allow blank lines within doc block
-            if trimmed.is_empty() {
-                docs.push(String::new());
-            }
+    let mut docs = Vec::new();
+
+    for attr in &file.attrs {
+        if let Some(doc) = extract_doc_from_attr(attr) {
+            docs.push(doc);
         }
     }
 
-    // Trim trailing empty lines
-    while docs.last().is_some_and(String::is_empty) {
-        docs.pop();
+    Ok(docs.join("\n"))
+}
+
+/// Extract the doc string from a #[doc = "..."] attribute.
+fn extract_doc_from_attr(attr: &Attribute) -> Option<String> {
+    // Check if this is a doc attribute
+    if !attr.path().is_ident("doc") {
+        return None;
     }
 
-    docs.join("\n")
+    // Extract the value from #[doc = "value"]
+    if let Meta::NameValue(meta) = &attr.meta
+        && let syn::Expr::Lit(expr_lit) = &meta.value
+        && let syn::Lit::Str(lit_str) = &expr_lit.lit
+    {
+        return Some(lit_str.value());
+    }
+
+    None
 }

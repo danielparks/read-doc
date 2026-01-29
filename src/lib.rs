@@ -1,15 +1,20 @@
 //! Include docstrings from submodules.
 //!
-//! This crate provides the [`include_docs`] attribute macro, which extracts
-//! `//!` documentation comments from a submodule file and appends them to the
-//! parent module's documentation.
+//! This crate provides macros that extract inner doc comments from Rust source
+//! files and combine them into a string literal for use with `#[doc = ...]`.
+//!
+//! All doc comment formats are supported:
+//! - `//!` line comments
+//! - `/*! */` block comments
+//! - `#![doc = "..."]` attributes
 //!
 //! # Example
 //!
 //! ```ignore
 //! //! # Parent module docs
 //!
-//! #[include_docs]
+//! #![doc = include_docs::include_docs!("src/child.rs")]
+//!
 //! mod child;
 //! pub use child::*;
 //! ```

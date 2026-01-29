@@ -3,8 +3,9 @@
 [![docs.rs](https://img.shields.io/docsrs/include-docs)][docs.rs]
 [![Crates.io](https://img.shields.io/crates/v/include-docs)][crates.io]
 
-Include `//!` documentation from submodule files into parent module
-documentation.
+Include inner doc comments from submodule files into parent module
+documentation. Supports all doc comment formats: `//!`, `/*! */`, and
+`#![doc = "..."]`.
 
 ## Example
 
