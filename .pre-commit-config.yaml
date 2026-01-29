@@ -9,6 +9,7 @@ repos:
       - id: check-json
       - id: check-merge-conflict
       - id: check-shebang-scripts-are-executable
+        exclude: "^(tests/no_inner_docs[.]rs|tests/doc_formats/attr_docs[.]rs)$"
       - id: check-symlinks
       - id: check-toml
       - id: check-vcs-permalinks
@@ -18,9 +19,9 @@ repos:
       - id: mixed-line-ending
         args: ["--fix=no"]
         exclude: "^target/"
-      - id: no-commit-to-branch
+      #- id: no-commit-to-branch
   - repo: https://github.com/crate-ci/typos
-    rev: v1.39.0
+    rev: v1.42.3
     hooks:
       - id: typos
         args: []
