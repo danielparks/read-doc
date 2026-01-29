@@ -1,5 +1,5 @@
 error: expected string literal
- --> tests/compile_fail/invalid_syntax.rs:5:33
+ --> tests/compile_fail/non_string.rs:5:33
   |
 5 |     let _: &str = include_docs!(123);
   |                                 ^^^
