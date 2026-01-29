@@ -10,8 +10,7 @@ use proc_macro2::Span;
 use quote::quote;
 use std::path::{Path, PathBuf};
 use syn::{
-    Attribute, LitStr, Meta, Token, parse::Parse, parse::ParseStream,
-    parse_macro_input,
+    LitStr, Meta, Token, parse::Parse, parse::ParseStream, parse_macro_input,
 };
 
 /// Input for `include_docs!` macro.
@@ -110,43 +109,26 @@ pub fn include_docs(input: TokenStream) -> TokenStream {
     quote! { #lit }.into()
 }
 
-/// Extract inner doc comments from Rust source content using syn.
-///
-/// This handles all forms of inner documentation:
-/// - `//! line doc`
-/// - `/*! block doc */`
-/// - `#![doc = "string"]`
+/// Extract inner doc comments from Rust source.
 fn extract_inner_docs(content: &str) -> Result<String, syn::Error> {
-    // Parse as a file to get all the inner attributes
-    let file = syn::parse_file(content)?;
-
-    let mut docs = Vec::new();
-
-    for attr in &file.attrs {
-        if let Some(doc) = extract_doc_from_attr(attr) {
-            docs.push(doc);
-        }
-    }
-
-    Ok(docs.join("\n"))
-}
-
-/// Extract the doc string from a #[doc = "..."] attribute.
-fn extract_doc_from_attr(attr: &Attribute) -> Option<String> {
-    // Check if this is a doc attribute
-    if !attr.path().is_ident("doc") {
-        return None;
-    }
-
-    // Extract the value from #[doc = "value"]
-    if let Meta::NameValue(meta) = &attr.meta
-        && let syn::Expr::Lit(expr_lit) = &meta.value
-        && let syn::Lit::Str(lit_str) = &expr_lit.lit
-    {
-        return Some(lit_str.value());
-    }
-
-    None
+    Ok(syn::parse_file(content)?
+        .attrs
+        .into_iter()
+        .map_while(|attr| {
+            if attr.path().is_ident("doc")
+                && let Meta::NameValue(meta) = &attr.meta
+                && let syn::Expr::Lit(expr_lit) = &meta.value
+                && let syn::Lit::Str(lit_str) = &expr_lit.lit
+            {
+                Some(lit_str.value())
+            } else {
+                // Found something other than a doc attribute with a value; stop
+                // reading attributes.
+                None
+            }
+        })
+        .collect::<Vec<_>>()
+        .join("\n"))
 }
 
 /// Get the directory containing the source file that called the macro.
