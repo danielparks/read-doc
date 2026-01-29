@@ -1,10 +1,10 @@
 [package]
-name = "combine-docs"
+name = "include-docs"
 version = "0.1.0"
-authors = ["Daniel Parks <oss-combine-docs@demonhorse.org>"]
+authors = ["Daniel Parks <oss-include-docs@demonhorse.org>"]
 description = ""
-homepage = "https://github.com/danielparks/combine-docs"
-repository = "https://github.com/danielparks/combine-docs"
+homepage = "https://github.com/danielparks/include-docs"
+repository = "https://github.com/danielparks/include-docs"
 readme = "README.md"
 exclude = [".*", "/release.sh"]
 keywords = []
@@ -19,12 +19,6 @@ rustdoc-args = ["--cfg", "docsrs"]
 [dependencies]
 
 [dev-dependencies]
-assert2 = "0.3.15"
-criterion = "0.5.1"
-
-[[bench]]
-name = "general"
-harness = false
 
 [lints]
 workspace = true

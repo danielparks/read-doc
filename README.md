@@ -1,11 +1,11 @@
-# combine-docs
+# `#[include-docs]`
 
-[![docs.rs](https://img.shields.io/docsrs/combine-docs)][docs.rs]
-[![Crates.io](https://img.shields.io/crates/v/combine-docs)][crates.io]
+[![docs.rs](https://img.shields.io/docsrs/include-docs)][docs.rs]
+[![Crates.io](https://img.shields.io/crates/v/include-docs)][crates.io]
 ![Rust version 1.65+](https://img.shields.io/badge/Rust%20version-1.65%2B-success)
 
-This allows you to combine docstrings from submodules into the parent
-module documentation.
+This allows you to include docstrings from submodules into the parent module
+documentation.
 
 # Example
 
@@ -77,6 +77,6 @@ Unless you explicitly state otherwise, any contribution you submit as defined
 in the Apache 2.0 license shall be dual licensed as above, without any
 additional terms or conditions.
 
-[docs.rs]: https://docs.rs/combine-docs/latest/combine_docs/
-[crates.io]: https://crates.io/crates/combine-docs
-[issues]: https://github.com/danielparks/combine-docs/issues
+[docs.rs]: https://docs.rs/include-docs/latest/combine_docs/
+[crates.io]: https://crates.io/crates/include-docs
+[issues]: https://github.com/danielparks/include-docs/issues
