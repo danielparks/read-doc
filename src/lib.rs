@@ -171,78 +171,97 @@ fn get_source_dir() -> Result<PathBuf, syn::Error> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use assert2::assert;
 
     #[test]
-    fn test_line_doc_comments() {
-        let source = r"
+    fn line_doc_comments() {
+        assert!(
+            extract_inner_docs(
+                r"
 //! First line
 //! Second line
 
 fn foo() {}
-";
-        let result = extract_inner_docs(source).unwrap();
-        assert_eq!(result, " First line\n Second line");
+"
+            )
+            .unwrap()
+                == " First line\n Second line"
+        );
     }
 
     #[test]
-    fn test_block_doc_comments() {
-        let source = r"
+    fn block_doc_comments() {
+        assert!(
+            extract_inner_docs(
+                r"
 /*! Block doc comment
 with multiple lines
 */
 
 fn foo() {}
-";
-        let result = extract_inner_docs(source).unwrap();
-        assert_eq!(result, " Block doc comment\nwith multiple lines\n");
+"
+            )
+            .unwrap()
+                == " Block doc comment\nwith multiple lines\n"
+        );
     }
 
     #[test]
-    fn test_doc_attributes() {
-        let source = r#"
+    fn doc_attributes() {
+        assert!(
+            extract_inner_docs(
+                r#"
 #![doc = "First line"]
 #![doc = "Second line"]
 
 fn foo() {}
-"#;
-        let result = extract_inner_docs(source).unwrap();
-        assert_eq!(result, "First line\nSecond line");
+"#
+            )
+            .unwrap()
+                == "First line\nSecond line"
+        );
     }
 
     #[test]
-    fn test_mixed_doc_styles() {
-        let source = r#"
+    fn mixed_doc_styles() {
+        assert!(
+            extract_inner_docs(
+                r#"
 //! Line comment
 #![doc = "Attribute doc"]
 
 fn foo() {}
-"#;
-        let result = extract_inner_docs(source).unwrap();
-        assert_eq!(result, " Line comment\nAttribute doc");
+"#
+            )
+            .unwrap()
+                == " Line comment\nAttribute doc"
+        );
     }
 
     #[test]
-    fn test_no_docs() {
-        let source = r"
-fn foo() {}
-";
-        let result = extract_inner_docs(source).unwrap();
-        assert_eq!(result, "");
+    fn no_docs() {
+        assert!(extract_inner_docs("fn foo() {}\n").unwrap() == "");
     }
 
     #[test]
-    fn test_only_outer_docs_ignored() {
-        let source = r"
+    fn only_outer_docs_ignored() {
+        assert!(
+            extract_inner_docs(
+                r"
 /// This is an outer doc comment
 fn foo() {}
-";
-        let result = extract_inner_docs(source).unwrap();
-        assert_eq!(result, "");
+"
+            )
+            .unwrap()
+                == ""
+        );
     }
 
     #[test]
-    fn test_realistic_module() {
-        let source = r"
+    fn realistic_module() {
+        assert!(
+            extract_inner_docs(
+                r"
 //! # Module Title
 //!
 //! This module does things.
@@ -251,21 +270,27 @@ use std::io;
 
 /// Function doc
 pub fn do_thing() {}
-";
-        let result = extract_inner_docs(source).unwrap();
-        assert_eq!(result, " # Module Title\n\n This module does things.");
+"
+            )
+            .unwrap()
+                == " # Module Title\n\n This module does things."
+        );
     }
 
     #[test]
-    fn test_empty_doc_lines() {
-        let source = r"
+    fn empty_doc_lines() {
+        assert!(
+            extract_inner_docs(
+                r"
 //! First
 //!
 //! Third
 
 fn foo() {}
-";
-        let result = extract_inner_docs(source).unwrap();
-        assert_eq!(result, " First\n\n Third");
+"
+            )
+            .unwrap()
+                == " First\n\n Third"
+        );
     }
 }
