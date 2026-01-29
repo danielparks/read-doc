@@ -1,41 +1,43 @@
-# `#[include-docs]`
+# include-docs
 
 [![docs.rs](https://img.shields.io/docsrs/include-docs)][docs.rs]
 [![Crates.io](https://img.shields.io/crates/v/include-docs)][crates.io]
-![Rust version 1.65+](https://img.shields.io/badge/Rust%20version-1.65%2B-success)
 
-This allows you to include docstrings from submodules into the parent module
+Include `//!` documentation from submodule files into parent module
 documentation.
 
-# Example
+## Example
 
-The following documentation for the `fuit` module will be generated from the
+The following documentation for the `fruit` module will be generated from the
 three files below.
 
-> # Fruit functionality
+> ## Fruit functionality
 >
 > This has a lot of interesting functionality.
 >
-> ## Apple processing
+> ### Apple processing
 >
-> Green or red, we don’t care.
+> Green or red, we don't care.
 >
-> ## Orange processing
+> ### Orange processing
 >
 > Various orange-related code.
 
 ### `/src/fruit/mod.rs`
 
 ```rust
-//! # Fruit functionality
+//! ## Fruit functionality
 //!
 //! This has a lot of interesting functionality.
 
-#[include_docs]
+#![doc = include_docs::include_docs!(
+    "src/fruit/apple.rs",
+    "src/fruit/orange.rs"
+)]
+
 mod apple;
 pub use apple::*;
 
-#[include_docs]
 mod orange;
 pub use orange::*;
 ```
@@ -43,9 +45,9 @@ pub use orange::*;
 ### `/src/fruit/apple.rs`
 
 ```rust
-//! ## Apple processing
+//! ### Apple processing
 //!
-//! Green or red, we don’t care.
+//! Green or red, we don't care.
 
 /// Sweet or tart.
 pub struct Apple;
@@ -54,13 +56,19 @@ pub struct Apple;
 ### `/src/fruit/orange.rs`
 
 ```rust
-//! ## Orange processing
+//! ### Orange processing
 //!
 //! Various orange-related code.
 
 /// A round fruit.
 pub struct Orange;
 ```
+
+## Macros
+
+- `include_docs!("path1.rs", "path2.rs", ...)` - Include docs from multiple
+  files, separated by blank lines.
+- `include_module_docs!("path.rs")` - Include docs from a single file.
 
 ## Development status
 
