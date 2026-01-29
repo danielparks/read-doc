@@ -1,4 +1,4 @@
-# Macro to read module documentation from a Rust source file
+# Macro to read module documentation from Rust source files
 
 [![docs.rs](https://img.shields.io/docsrs/include-docs)][docs.rs]
 [![Crates.io](https://img.shields.io/crates/v/include-docs)][crates.io]

@@ -33,7 +33,7 @@ impl Parse for IncludeDocsInput {
     }
 }
 
-/// Read module documentation from files.
+/// Read module documentation from Rust source files.
 ///
 /// This macro extracts inner doc comments (`//!`, `/*! */`, `#![doc = "..."]`)
 /// from the passed Rust source files and combines them into a single string
