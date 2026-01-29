@@ -114,7 +114,7 @@ fn extract_inner_docs(content: &str) -> Result<String, syn::Error> {
     Ok(syn::parse_file(content)?
         .attrs
         .into_iter()
-        .map_while(|attr| {
+        .filter_map(|attr| {
             if attr.path().is_ident("doc")
                 && let Meta::NameValue(meta) = &attr.meta
                 && let syn::Expr::Lit(expr_lit) = &meta.value
@@ -122,8 +122,7 @@ fn extract_inner_docs(content: &str) -> Result<String, syn::Error> {
             {
                 Some(lit_str.value())
             } else {
-                // Found something other than a doc attribute with a value; stop
-                // reading attributes.
+                // Skip attributes other than a doc attributes with a value.
                 None
             }
         })
@@ -161,6 +160,23 @@ mod tests {
             extract_inner_docs(
                 r"
 //! First line
+//! Second line
+
+fn foo() {}
+"
+            )
+            .unwrap()
+                == " First line\n Second line"
+        );
+    }
+
+    #[test]
+    fn mixed_attrs() {
+        assert!(
+            extract_inner_docs(
+                r"
+//! First line
+#![forbid(unsafe_code)]
 //! Second line
 
 fn foo() {}
