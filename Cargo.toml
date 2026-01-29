@@ -16,10 +16,13 @@ edition = "2024"
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
-[dependencies]
-include-docs-macro = { path = "include-docs-macro" }
+[lib]
+proc-macro = true
 
-[dev-dependencies]
+[dependencies]
+proc-macro2 = { version = "1.0.106", features = ["span-locations"] }
+quote = "1.0.44"
+syn = { version = "2.0.114", features = ["full", "parsing"] }
 
 [lints]
 workspace = true
