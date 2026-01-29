@@ -67,16 +67,24 @@ pub struct Apple;
 pub struct Orange;
 ```
 
-## Development status
-
-This is in active development. I am open to [suggestions][issues].
-
 ## Minimum supported Rust version
 
 Currently the minimum supported Rust version (MSRV) is **1.88**. Future
 increases in the MSRV will require a major version bump.
 
-## License
+## Development
+
+This is in active development. I am open to [suggestions][issues].
+
+### LLM use
+
+LLM produced code must be marked in the commit message. I typically ask the LLM
+to make its own commits, then I make my own changes after careful review.
+
+Example: 62ab2857d8d17fdf2d7db1f902b6281732854648 was written by Claude; I
+cleaned up that commit in 63e1a97c17f4c9452d59309c1e26a226f1155009.
+
+### License
 
 Unless otherwise noted, this project is dual-licensed under the Apache 2 and MIT
 licenses. You may choose to use either.
