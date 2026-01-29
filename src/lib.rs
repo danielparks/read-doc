@@ -45,17 +45,58 @@ impl Parse for IncludeDocsInput {
 ///
 /// # Example
 ///
-/// ```ignore
+/// Given the source files below, `cargo doc` will produce the following
+/// documentation:
+///
+/// ```Markdown
+/// # Fruit functionality
+///
+/// This has a lot of interesting functionality.
+///
+/// ### Apple processing
+///
+/// Green or red, we don't care.
+///
+/// ### Orange processing
+///
+/// Various orange-related code.
+/// ```
+///
+/// ### `/src/fruit/mod.rs`
+///
+/// ```rust,ignore
 /// //! # Fruit functionality
 /// //!
 /// //! This has a lot of interesting functionality.
-/// #[doc = include_docs!("apple.rs", "orange.rs")]
+/// #![doc = include_docs::include_docs!("apple.rs", "orange.rs")]
 ///
 /// mod apple;
 /// pub use apple::*;
 ///
 /// mod orange;
 /// pub use orange::*;
+/// ```
+///
+/// ### `/src/fruit/apple.rs`
+///
+/// ```rust
+/// //! ### Apple processing
+/// //!
+/// //! Green or red, we don't care.
+///
+/// /// Sweet or tart.
+/// pub struct Apple;
+/// ```
+///
+/// ### `/src/fruit/orange.rs`
+///
+/// ```rust
+/// //! ### Orange processing
+/// //!
+/// //! Various orange-related code.
+///
+/// /// A round fruit.
+/// pub struct Orange;
 /// ```
 #[proc_macro]
 pub fn include_docs(input: TokenStream) -> TokenStream {

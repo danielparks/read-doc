@@ -3,29 +3,31 @@
 [![docs.rs](https://img.shields.io/docsrs/include-docs)][docs.rs]
 [![Crates.io](https://img.shields.io/crates/v/include-docs)][crates.io]
 
-This provides the `include_docs!("path1.rs", "path2.rs", ...)` macro, which
-reads module documentation from Rust source files. Paths are relative to the
-directory of the calling file.
+This provides the [`include_docs!("path1.rs", "path2.rs", ...)`][include_docs]
+macro, which reads module documentation from Rust source files.
 
-If multiple files are specified, their module documentation will be separated by
-a blank line.
+This is useful if you want to arrange your code logically in private submodules
+along with summary module documentation, then re-export the items and overview
+documentation in the public parent module.
 
 ## Example
 
 The following documentation for the `fruit` module will be generated from the
 three files below.
 
-> ## Fruit functionality
->
-> This has a lot of interesting functionality.
->
-> ### Apple processing
->
-> Green or red, we don't care.
->
-> ### Orange processing
->
-> Various orange-related code.
+```markdown
+## Fruit functionality
+
+This has a lot of interesting functionality.
+
+### Apple processing
+
+Green or red, we don't care.
+
+### Orange processing
+
+Various orange-related code.
+```
 
 ### `/src/fruit/mod.rs`
 
@@ -82,6 +84,7 @@ Unless you explicitly state otherwise, any contribution you submit as defined
 in the Apache 2.0 license shall be dual licensed as above, without any
 additional terms or conditions.
 
-[docs.rs]: https://docs.rs/include-docs/latest/combine_docs/
+[include_docs]: https://docs.rs/include-docs/latest/include_docs/macro.include_docs.html
+[docs.rs]: https://docs.rs/include-docs/latest/include_docs/
 [crates.io]: https://crates.io/crates/include-docs
 [issues]: https://github.com/danielparks/include-docs/issues
