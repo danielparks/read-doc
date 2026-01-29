@@ -2,7 +2,7 @@
 //!
 //! Testing different documentation styles.
 
-#![doc = include_docs::include_docs!(
+#![doc = include_docs::module!(
     "line_docs.rs",
     "block_docs.rs",
     "attr_docs.rs",

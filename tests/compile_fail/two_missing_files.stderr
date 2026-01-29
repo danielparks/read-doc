@@ -1,5 +1,5 @@
 error: Failed to read "$DIR/tests/compile_fail/nonesuch.rs": No such file or directory (os error 2)
- --> tests/compile_fail/two_missing_files.rs:4:33
+ --> tests/compile_fail/two_missing_files.rs:2:41
   |
-4 |     let _: &str = include_docs!("nonesuch.rs", "nada.rs");
-  |                                 ^^^^^^^^^^^^^
+2 |     let _: &str = include_docs::module!("nonesuch.rs", "nada.rs");
+  |                                         ^^^^^^^^^^^^^

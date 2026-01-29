@@ -6,13 +6,13 @@
 
 ```rust
 //! # Overall module documentation
-#![doc = include_docs::include_docs!("submodule1.rs", "submodule2.rs")]
+#![doc = include_docs::module!("submodule1.rs", "submodule2.rs")]
 
 mod submodule1;
 mod submodule2;
 ```
 
-The [`include_docs!("path1.rs", ...)`][include_docs] macro reads module
+The [`include_docs::module!("path1.rs", ...)`][macro] macro reads module
 documentation from Rust source files as a string.
 
 This is useful if you want to arrange your code logically in private submodules
@@ -44,7 +44,7 @@ Various orange-related code.
 //! ## Fruit functionality
 //!
 //! This has a lot of interesting functionality.
-#![doc = include_docs::include_docs!("apple.rs", "orange.rs")]
+#![doc = include_docs::module!("apple.rs", "orange.rs")]
 
 mod apple;
 pub use apple::*;
@@ -115,7 +115,7 @@ Unless you explicitly state otherwise, any contribution you submit as defined
 in the Apache 2.0 license shall be dual licensed as above, without any
 additional terms or conditions.
 
-[include_docs]: https://docs.rs/include-docs/latest/include_docs/macro.include_docs.html
+[macro]: https://docs.rs/include-docs/latest/include_docs/macro.module.html
 [docs.rs]: https://docs.rs/include-docs/latest/include_docs/
 [crates.io]: https://crates.io/crates/include-docs
 [issues]: https://github.com/danielparks/include-docs/issues

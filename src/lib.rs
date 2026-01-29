@@ -19,13 +19,13 @@ use syn::{
     LitStr, Meta, Token, parse::Parse, parse::ParseStream, parse_macro_input,
 };
 
-/// Input for `include_docs!` macro.
-struct IncludeDocsInput {
+/// Input for `module!` macro.
+struct ModuleInput {
     /// Paths to the files, relative to the directory of the calling file.
     paths: Vec<LitStr>,
 }
 
-impl Parse for IncludeDocsInput {
+impl Parse for ModuleInput {
     fn parse(input: ParseStream) -> syn::Result<Self> {
         let mut paths = Vec::new();
         while !input.is_empty() {
@@ -42,7 +42,7 @@ impl Parse for IncludeDocsInput {
 ///
 /// ```ignore
 /// //! # Overall module documentation
-/// #![doc = include_docs::include_docs!("submodule1.rs", "submodule2.rs")]
+/// #![doc = include_docs::module!("submodule1.rs", "submodule2.rs")]
 ///
 /// mod submodule1;
 /// mod submodule2;
@@ -80,7 +80,7 @@ impl Parse for IncludeDocsInput {
 /// //! # Fruit functionality
 /// //!
 /// //! This has a lot of interesting functionality.
-/// #![doc = include_docs::include_docs!("apple.rs", "orange.rs")]
+/// #![doc = include_docs::module!("apple.rs", "orange.rs")]
 ///
 /// mod apple;
 /// pub use apple::*;
@@ -111,8 +111,8 @@ impl Parse for IncludeDocsInput {
 /// pub struct Orange;
 /// ```
 #[proc_macro]
-pub fn include_docs(input: TokenStream) -> TokenStream {
-    fn inner(input: &IncludeDocsInput) -> syn::Result<TokenStream> {
+pub fn module(input: TokenStream) -> TokenStream {
+    fn inner(input: &ModuleInput) -> syn::Result<TokenStream> {
         let base_dir = get_source_dir()?;
 
         let docs = input
@@ -139,7 +139,7 @@ pub fn include_docs(input: TokenStream) -> TokenStream {
         Ok(quote! { #lit }.into())
     }
 
-    match inner(&parse_macro_input!(input as IncludeDocsInput)) {
+    match inner(&parse_macro_input!(input as ModuleInput)) {
         Ok(stream) => stream,
         Err(error) => error.to_compile_error().into(),
     }
