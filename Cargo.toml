@@ -2,7 +2,7 @@
 name = "include-docs"
 version = "0.1.0"
 authors = ["Daniel Parks <oss-include-docs@demonhorse.org>"]
-description = ""
+description = "Macro to read module documentation from a Rust source file"
 homepage = "https://github.com/danielparks/include-docs"
 repository = "https://github.com/danielparks/include-docs"
 readme = "README.md"

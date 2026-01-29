@@ -1,23 +1,4 @@
-//! Include docstrings from submodules.
-//!
-//! This crate provides macros that extract inner doc comments from Rust source
-//! files and combine them into a string literal for use with `#[doc = ...]`.
-//!
-//! All doc comment formats are supported:
-//! - `//!` line comments
-//! - `/*! */` block comments
-//! - `#![doc = "..."]` attributes
-//!
-//! # Example
-//!
-//! ```ignore
-//! //! # Parent module docs
-//!
-//! #![doc = include_docs::include_docs!("src/child.rs")]
-//!
-//! mod child;
-//! pub use child::*;
-//! ```
+//! Read module documentation from Rust source files.
 
 // Lint configuration in Cargo.toml isn't supported by cargo-geiger.
 #![forbid(unsafe_code)]
@@ -52,11 +33,15 @@ impl Parse for IncludeDocsInput {
     }
 }
 
-/// Include module documentation from multiple files.
+/// Read module documentation from at least one file.
 ///
 /// This macro extracts inner doc comments (`//!`, `/*! */`, `#![doc = "..."]`)
-/// from multiple Rust source files and combines them into a single string
+/// from at least one Rust source files and combines them into a single string
 /// literal, suitable for use with `#[doc = ...]`.
+///
+/// Each file’s module documentation will be separated by a blank line.
+///
+/// Paths are relative to the directory containing the calling file.
 ///
 /// # Example
 ///
@@ -72,8 +57,6 @@ impl Parse for IncludeDocsInput {
 /// mod orange;
 /// pub use orange::*;
 /// ```
-///
-/// Paths are relative to the directory of calling source file.
 #[proc_macro]
 pub fn include_docs(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as IncludeDocsInput);

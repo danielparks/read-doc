@@ -1,11 +1,14 @@
-# include-docs
+# Macro to read module documentation from a Rust source file
 
 [![docs.rs](https://img.shields.io/docsrs/include-docs)][docs.rs]
 [![Crates.io](https://img.shields.io/crates/v/include-docs)][crates.io]
 
-Include inner doc comments from submodule files into parent module
-documentation. Supports all doc comment formats: `//!`, `/*! */`, and
-`#![doc = "..."]`.
+This provides the `include_docs!("path1.rs", "path2.rs", ...)` macro, which
+reads module documentation from at least one source file. Paths are relative to
+the directory of the calling file.
+
+If multiple files are specified, their module documentation will be separated by
+a blank line.
 
 ## Example
 
@@ -60,11 +63,6 @@ pub struct Apple;
 /// A round fruit.
 pub struct Orange;
 ```
-
-## Macros
-
-`include_docs!("path1.rs", "path2.rs", ...)` — Include module documentation from
-at least one file. Paths are relative to the directory of the calling file.
 
 ## Development status
 
