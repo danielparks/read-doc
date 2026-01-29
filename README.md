@@ -63,9 +63,8 @@ pub struct Orange;
 
 ## Macros
 
-- `include_docs!("path1.rs", "path2.rs", ...)` - Include docs from multiple
-  files, separated by blank lines.
-- `include_module_docs!("path.rs")` - Include docs from a single file.
+`include_docs!("path1.rs", "path2.rs", ...)` — Include module documentation from
+at least one file. Paths are relative to the directory of the calling file.
 
 ## Development status
 

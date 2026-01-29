@@ -5,7 +5,8 @@
 #![doc = include_docs::include_docs!(
     "line_docs.rs",
     "block_docs.rs",
-    "attr_docs.rs"
+    "attr_docs.rs",
+    "no_docs.rs",
 )]
 
 mod line_docs;
@@ -16,3 +17,6 @@ pub use block_docs::*;
 
 mod attr_docs;
 pub use attr_docs::*;
+
+mod no_docs;
+pub use no_docs::*;

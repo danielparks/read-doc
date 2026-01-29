@@ -9,7 +9,7 @@ repos:
       - id: check-json
       - id: check-merge-conflict
       - id: check-shebang-scripts-are-executable
-        exclude: "^(tests/no_inner_docs[.]rs|tests/doc_formats/attr_docs[.]rs)$"
+        exclude: "^(tests/doc_formats/no_docs[.]rs|tests/doc_formats/attr_docs[.]rs)$"
       - id: check-symlinks
       - id: check-toml
       - id: check-vcs-permalinks
