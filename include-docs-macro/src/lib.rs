@@ -6,20 +6,21 @@
 use proc_macro::TokenStream;
 use proc_macro2::Span;
 use quote::quote;
-use std::path::Path;
-use syn::{parse::Parse, parse::ParseStream, parse_macro_input, Attribute, LitStr, Meta, Token};
+use std::path::{Path, PathBuf};
+use syn::{
+    Attribute, LitStr, Meta, Token, parse::Parse, parse::ParseStream,
+    parse_macro_input,
+};
 
 /// Input for the `include_module_docs!` macro.
 struct IncludeModuleDocsInput {
-    /// Path to the file, relative to CARGO_MANIFEST_DIR.
+    /// Path to the file, relative to the directory of calling source file.
     path: LitStr,
 }
 
 impl Parse for IncludeModuleDocsInput {
     fn parse(input: ParseStream) -> syn::Result<Self> {
-        Ok(Self {
-            path: input.parse()?,
-        })
+        Ok(Self { path: input.parse()? })
     }
 }
 
@@ -33,29 +34,24 @@ impl Parse for IncludeModuleDocsInput {
 ///
 /// ```ignore
 /// //! # Parent module docs
+/// #[doc = include_module_docs!("child.rs")]
 ///
-/// #[doc = include_module_docs!("src/fruit/child.rs")]
 /// mod child;
 /// pub use child::*;
 /// ```
 ///
-/// The path is relative to `CARGO_MANIFEST_DIR` (typically the crate root).
+/// The path is relative to the directory of calling source file.
 #[proc_macro]
 pub fn include_module_docs(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as IncludeModuleDocsInput);
     let path_str = input.path.value();
 
-    let base_dir = match std::env::var("CARGO_MANIFEST_DIR") {
-        Ok(dir) => dir,
-        Err(_) => {
-            return syn::Error::new(input.path.span(), "CARGO_MANIFEST_DIR not set")
-                .to_compile_error()
-                .into();
-        }
+    let base_dir = match get_source_dir() {
+        Ok(path) => path,
+        Err(error) => return error.to_compile_error().into(),
     };
 
     let full_path = Path::new(&base_dir).join(&path_str);
-
     let content = match std::fs::read_to_string(&full_path) {
         Ok(c) => c,
         Err(e) => {
@@ -87,7 +83,7 @@ pub fn include_module_docs(input: TokenStream) -> TokenStream {
 
 /// Input for `include_docs!` macro.
 struct IncludeDocsInput {
-    /// Paths to the files, relative to CARGO_MANIFEST_DIR.
+    /// Paths to the files, relative to the directory of calling source file.
     paths: Vec<LitStr>,
 }
 
@@ -116,35 +112,31 @@ impl Parse for IncludeDocsInput {
 /// //! # Fruit functionality
 /// //!
 /// //! This has a lot of interesting functionality.
+/// #[doc = include_docs!("apple.rs", "orange.rs")]
 ///
-/// #[doc = include_docs!("src/fruit/apple.rs", "src/fruit/orange.rs")]
-/// mod fruit {
-///     mod apple;
-///     pub use apple::*;
+/// mod apple;
+/// pub use apple::*;
 ///
-///     mod orange;
-///     pub use orange::*;
-/// }
+/// mod orange;
+/// pub use orange::*;
 /// ```
 ///
-/// Paths are relative to `CARGO_MANIFEST_DIR` (typically the crate root).
+/// Paths are relative to the directory of calling source file.
 #[proc_macro]
 pub fn include_docs(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as IncludeDocsInput);
 
     if input.paths.is_empty() {
-        return syn::Error::new(Span::call_site(), "Expected at least one file path")
-            .to_compile_error()
-            .into();
+        return syn::Error::new(
+            Span::call_site(),
+            "Expected at least one file path",
+        )
+        .to_compile_error()
+        .into();
     }
-
-    let base_dir = match std::env::var("CARGO_MANIFEST_DIR") {
-        Ok(dir) => dir,
-        Err(_) => {
-            return syn::Error::new(Span::call_site(), "CARGO_MANIFEST_DIR not set")
-                .to_compile_error()
-                .into();
-        }
+    let base_dir = match get_source_dir() {
+        Ok(path) => path,
+        Err(error) => return error.to_compile_error().into(),
     };
 
     let mut all_docs = Vec::new();
@@ -228,6 +220,25 @@ fn extract_doc_from_attr(attr: &Attribute) -> Option<String> {
     }
 
     None
+}
+
+/// Get the directory containing the source file that called the macro.
+///
+/// # Errors
+///
+/// Returns and error if source didn’t have a path, or if we couldn’t get the
+/// parent of that path.
+fn get_source_dir() -> Result<PathBuf, syn::Error> {
+    match Span::call_site()
+        .local_file()
+        .and_then(|path| path.parent().map(Path::to_path_buf))
+    {
+        Some(path) => Ok(path),
+        None => Err(syn::Error::new(
+            Span::call_site(),
+            "Could not get path to source file",
+        )),
+    }
 }
 
 #[cfg(test)]

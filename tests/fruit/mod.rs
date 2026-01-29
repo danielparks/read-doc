@@ -3,8 +3,8 @@
 //! This has a lot of interesting functionality.
 
 #![doc = include_docs::include_docs!(
-    "tests/fruit/apple.rs",
-    "tests/fruit/orange.rs"
+    "apple.rs",
+    "orange.rs"
 )]
 
 mod apple;

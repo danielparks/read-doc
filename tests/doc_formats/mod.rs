@@ -3,9 +3,9 @@
 //! Testing different documentation styles.
 
 #![doc = include_docs::include_docs!(
-    "tests/doc_formats/line_docs.rs",
-    "tests/doc_formats/block_docs.rs",
-    "tests/doc_formats/attr_docs.rs"
+    "line_docs.rs",
+    "block_docs.rs",
+    "attr_docs.rs"
 )]
 
 mod line_docs;

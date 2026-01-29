@@ -1,7 +1,8 @@
 //! Ensure that the code itself compile correctly.
+#![allow(clippy::no_effect_underscore_binding, reason = "testing")]
 
-mod fruit;
 mod doc_formats;
+mod fruit;
 
 #[test]
 fn test_fruit_types_accessible() {

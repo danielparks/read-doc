@@ -30,11 +30,7 @@ three files below.
 //! ## Fruit functionality
 //!
 //! This has a lot of interesting functionality.
-
-#![doc = include_docs::include_docs!(
-    "src/fruit/apple.rs",
-    "src/fruit/orange.rs"
-)]
+#![doc = include_docs::include_docs!("apple.rs", "orange.rs")]
 
 mod apple;
 pub use apple::*;
