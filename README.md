@@ -33,8 +33,11 @@ three files below.
 
 #[include_docs]
 mod apple;
+pub use apple::*;
+
 #[include_docs]
 mod orange;
+pub use orange::*;
 ```
 
 ### `/src/fruit/apple.rs`
