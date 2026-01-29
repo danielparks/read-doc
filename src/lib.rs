@@ -15,7 +15,7 @@ use syn::{
 
 /// Input for `include_docs!` macro.
 struct IncludeDocsInput {
-    /// Paths to the files, relative to the directory of calling source file.
+    /// Paths to the files, relative to the directory of the calling file.
     paths: Vec<LitStr>,
 }
 
@@ -58,59 +58,52 @@ impl Parse for IncludeDocsInput {
 /// ```
 #[proc_macro]
 pub fn include_docs(input: TokenStream) -> TokenStream {
-    let input = parse_macro_input!(input as IncludeDocsInput);
+    fn inner(input: &IncludeDocsInput) -> syn::Result<TokenStream> {
+        let base_dir = get_source_dir()?;
 
-    let base_dir = match get_source_dir() {
-        Ok(path) => path,
-        Err(error) => return error.to_compile_error().into(),
-    };
+        let mut all_docs = Vec::new();
 
-    let mut all_docs = Vec::new();
+        for path_lit in &input.paths {
+            let path_str = path_lit.value();
+            let full_path = Path::new(&base_dir).join(&path_str);
 
-    for path_lit in &input.paths {
-        let path_str = path_lit.value();
-        let full_path = Path::new(&base_dir).join(&path_str);
+            let content =
+                std::fs::read_to_string(&full_path).map_err(|error| {
+                    syn::Error::new(
+                        path_lit.span(),
+                        format!("Failed to read {full_path:?}: {error}"),
+                    )
+                })?;
 
-        let content = match std::fs::read_to_string(&full_path) {
-            Ok(c) => c,
-            Err(e) => {
-                return syn::Error::new(
+            let docs = extract_inner_docs(&content).map_err(|error| {
+                syn::Error::new(
                     path_lit.span(),
-                    format!("Failed to read '{}': {e}", full_path.display()),
+                    format!("Failed to parse {full_path:?}: {error}"),
                 )
-                .to_compile_error()
-                .into();
-            }
-        };
+            })?;
 
-        let docs = match extract_inner_docs(&content) {
-            Ok(d) => d,
-            Err(e) => {
-                return syn::Error::new(
-                    path_lit.span(),
-                    format!("Failed to parse '{}': {e}", full_path.display()),
-                )
-                .to_compile_error()
-                .into();
+            if !docs.is_empty() {
+                if !all_docs.is_empty() {
+                    all_docs.push(String::new()); // blank line separator
+                }
+                all_docs.push(docs);
             }
-        };
-
-        if !docs.is_empty() {
-            if !all_docs.is_empty() {
-                all_docs.push(String::new()); // blank line separator
-            }
-            all_docs.push(docs);
         }
+
+        let combined = all_docs.join("\n");
+        let lit = LitStr::new(&combined, Span::call_site());
+
+        Ok(quote! { #lit }.into())
     }
 
-    let combined = all_docs.join("\n");
-    let lit = LitStr::new(&combined, Span::call_site());
-
-    quote! { #lit }.into()
+    match inner(&parse_macro_input!(input as IncludeDocsInput)) {
+        Ok(stream) => stream,
+        Err(error) => error.to_compile_error().into(),
+    }
 }
 
 /// Extract inner doc comments from Rust source.
-fn extract_inner_docs(content: &str) -> Result<String, syn::Error> {
+fn extract_inner_docs(content: &str) -> syn::Result<String> {
     Ok(syn::parse_file(content)?
         .attrs
         .into_iter()
