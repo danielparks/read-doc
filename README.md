@@ -67,6 +67,15 @@ pub struct Apple;
 pub struct Orange;
 ```
 
+## Similar crates
+
+I found three crates that allow access to doc comments on _types_ at runtime. I
+have not tried them, but here they are, listed in order of most to least simple:
+
+  1. [documented](https://docs.rs/documented/latest/documented/)
+  2. [doc_for](https://docs.rs/doc_for/latest/doc_for/)
+  3. [user_doc](https://docs.rs/user_doc/latest/user_doc/)
+
 ## Minimum supported Rust version
 
 Currently the minimum supported Rust version (MSRV) is **1.88**. Future
