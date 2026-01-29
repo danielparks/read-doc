@@ -4,8 +4,16 @@
 [![Crates.io](https://img.shields.io/crates/v/include-docs)][crates.io]
 ![Rust version 1.88+](https://img.shields.io/badge/Rust%20version-1.88%2B-success)
 
-This provides the [`include_docs!("path1.rs", "path2.rs", ...)`][include_docs]
-macro, which reads module documentation from Rust source files.
+```rust
+//! # Overall module documentation
+#![doc = include_docs::include_docs!("submodule1.rs", "submodule2.rs")]
+
+mod submodule1;
+mod submodule2;
+```
+
+The [`include_docs!("path1.rs", ...)`][include_docs] macro reads module
+documentation from Rust source files as a string.
 
 This is useful if you want to arrange your code logically in private submodules
 along with summary module documentation, then re-export the items and overview

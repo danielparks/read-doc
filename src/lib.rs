@@ -38,11 +38,18 @@ impl Parse for IncludeDocsInput {
     }
 }
 
-/// Read module documentation from Rust source files.
+/// # Read module documentation from Rust source files.
 ///
-/// This macro extracts inner doc comments (`//!`, `/*! */`, `#![doc = "..."]`)
-/// from the passed Rust source files and combines them into a single string
-/// literal that can be used with `#[doc = ...]`.
+/// ```ignore
+/// //! # Overall module documentation
+/// #![doc = include_docs::include_docs!("submodule1.rs", "submodule2.rs")]
+///
+/// mod submodule1;
+/// mod submodule2;
+/// ```
+///
+/// This macro extracts inner doc comments from the passed Rust source files and
+/// combines them into a string that can be used with `#[doc = ...]`.
 ///
 /// Each file’s module documentation will be separated by a blank line.
 ///
