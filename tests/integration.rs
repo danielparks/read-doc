@@ -1,3 +1,5 @@
+//! Ensure that the code itself compile correctly.
+
 mod fruit;
 mod doc_formats;
 
