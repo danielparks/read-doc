@@ -229,3 +229,105 @@ fn extract_doc_from_attr(attr: &Attribute) -> Option<String> {
 
     None
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_line_doc_comments() {
+        let source = r#"
+//! First line
+//! Second line
+
+fn foo() {}
+"#;
+        let result = extract_inner_docs(source).unwrap();
+        assert_eq!(result, " First line\n Second line");
+    }
+
+    #[test]
+    fn test_block_doc_comments() {
+        let source = r#"
+/*! Block doc comment
+with multiple lines
+*/
+
+fn foo() {}
+"#;
+        let result = extract_inner_docs(source).unwrap();
+        assert_eq!(result, " Block doc comment\nwith multiple lines\n");
+    }
+
+    #[test]
+    fn test_doc_attributes() {
+        let source = r#"
+#![doc = "First line"]
+#![doc = "Second line"]
+
+fn foo() {}
+"#;
+        let result = extract_inner_docs(source).unwrap();
+        assert_eq!(result, "First line\nSecond line");
+    }
+
+    #[test]
+    fn test_mixed_doc_styles() {
+        let source = r#"
+//! Line comment
+#![doc = "Attribute doc"]
+
+fn foo() {}
+"#;
+        let result = extract_inner_docs(source).unwrap();
+        assert_eq!(result, " Line comment\nAttribute doc");
+    }
+
+    #[test]
+    fn test_no_docs() {
+        let source = r#"
+fn foo() {}
+"#;
+        let result = extract_inner_docs(source).unwrap();
+        assert_eq!(result, "");
+    }
+
+    #[test]
+    fn test_only_outer_docs_ignored() {
+        let source = r#"
+/// This is an outer doc comment
+fn foo() {}
+"#;
+        let result = extract_inner_docs(source).unwrap();
+        assert_eq!(result, "");
+    }
+
+    #[test]
+    fn test_realistic_module() {
+        let source = r#"
+//! # Module Title
+//!
+//! This module does things.
+
+use std::io;
+
+/// Function doc
+pub fn do_thing() {}
+"#;
+        let result = extract_inner_docs(source).unwrap();
+        assert_eq!(result, " # Module Title\n\n This module does things.");
+    }
+
+    #[test]
+    fn test_empty_doc_lines() {
+        let source = r#"
+//! First
+//!
+//! Third
+
+fn foo() {}
+"#;
+        let result = extract_inner_docs(source).unwrap();
+        assert_eq!(result, " First\n\n Third");
+    }
+}
