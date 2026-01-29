@@ -4,8 +4,60 @@
 [![Crates.io](https://img.shields.io/crates/v/combine-docs)][crates.io]
 ![Rust version 1.65+](https://img.shields.io/badge/Rust%20version-1.65%2B-success)
 
-Generated from template https://github.com/danielparks/danielparks-template.rs
-with [cargo-generate](https://github.com/ashleygwilliams/cargo-generate).
+This allows you to combine docstrings from submodules into the parent
+module documentation.
+
+# Example
+
+The following documentation for the `fuit` module will be generated from the
+three files below.
+
+> # Fruit functionality
+>
+> This has a lot of interesting functionality.
+>
+> ## Apple processing
+>
+> Green or red, we don’t care.
+>
+> ## Orange processing
+>
+> Various orange-related code.
+
+### `/src/fruit/mod.rs`
+
+```rust
+//! # Fruit functionality
+//!
+//! This has a lot of interesting functionality.
+
+#[include_docs]
+mod apple;
+#[include_docs]
+mod orange;
+```
+
+### `/src/fruit/apple.rs`
+
+```rust
+//! ## Apple processing
+//!
+//! Green or red, we don’t care.
+
+/// Sweet or tart.
+pub struct Apple;
+```
+
+### `/src/fruit/orange.rs`
+
+```rust
+//! ## Orange processing
+//!
+//! Various orange-related code.
+
+/// A round fruit.
+pub struct Orange;
+```
 
 ## Development status
 
