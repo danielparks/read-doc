@@ -1,4 +1,12 @@
-//! Read module documentation from Rust source files.
+//! # Read module documentation from Rust source files.
+//!
+//! See [`read_doc::module!`](module) for usage.
+//!
+//! If you want to read other doc comments, consider one of the follow crates:
+//!
+//!   * [documented](https://docs.rs/documented/latest/documented/)
+//!   * [doc_for](https://docs.rs/doc_for/latest/doc_for/)
+//!   * [user_doc](https://docs.rs/user_doc/latest/user_doc/)
 //!
 //! # Minimum supported Rust version
 //!
