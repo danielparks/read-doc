@@ -1,10 +1,10 @@
 [package]
-name = "include-docs"
+name = "read-doc"
 version = "0.1.0"
-authors = ["Daniel Parks <oss-include-docs@demonhorse.org>"]
+authors = ["Daniel Parks <oss-read-doc@demonhorse.org>"]
 description = "Macro to read module documentation from Rust source files"
-homepage = "https://github.com/danielparks/include-docs"
-repository = "https://github.com/danielparks/include-docs"
+homepage = "https://github.com/danielparks/read-doc"
+repository = "https://github.com/danielparks/read-doc"
 readme = "README.md"
 exclude = [".*", "/release.sh"]
 keywords = []

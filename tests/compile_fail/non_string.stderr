@@ -1,5 +1,5 @@
 error: expected string literal
- --> tests/compile_fail/non_string.rs:3:41
+ --> tests/compile_fail/non_string.rs:3:37
   |
-3 |     let _: &str = include_docs::module!(123);
-  |                                         ^^^
+3 |     let _: &str = read_doc::module!(123);
+  |                                     ^^^

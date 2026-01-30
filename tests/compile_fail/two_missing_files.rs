@@ -1,3 +1,3 @@
 fn main() {
-    let _: &str = include_docs::module!("nonesuch.rs", "nada.rs");
+    let _: &str = read_doc::module!("nonesuch.rs", "nada.rs");
 }

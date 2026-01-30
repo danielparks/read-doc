@@ -42,7 +42,7 @@ impl Parse for ModuleInput {
 ///
 /// ```ignore
 /// //! # Overall module documentation
-/// #![doc = include_docs::module!("submodule1.rs", "submodule2.rs")]
+/// #![doc = read_doc::module!("submodule1.rs", "submodule2.rs")]
 ///
 /// mod submodule1;
 /// mod submodule2;
@@ -80,7 +80,7 @@ impl Parse for ModuleInput {
 /// //! # Fruit functionality
 /// //!
 /// //! This has a lot of interesting functionality.
-/// #![doc = include_docs::module!("apple.rs", "orange.rs")]
+/// #![doc = read_doc::module!("apple.rs", "orange.rs")]
 ///
 /// mod apple;
 /// pub use apple::*;

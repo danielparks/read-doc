@@ -2,7 +2,7 @@
 //!
 //! This has a lot of interesting functionality.
 
-#![doc = include_docs::module!(
+#![doc = read_doc::module!(
     "apple.rs",
     "orange.rs"
 )]
