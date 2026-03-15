@@ -75,6 +75,21 @@ pub struct Apple;
 pub struct Orange;
 ```
 
+## Relative Markdown links
+
+`rustdoc` allows for the use of links to in-scope source items, such as
+<code>[\`MyStruct\`]</code>. When pulling docs in from another module, different
+items may be in scope. You may have to specify the full path, e.g.
+<code>[\`MyStruct\`][crate::module::MyStruct]</code>.
+
+This may trigger `rustdoc`’s [`redundant_explicit_links`] lint, since in one
+context the absolute links will be redundant. You can use an `#[expect]` or
+`#[allow]` attribute to suppress the lint, likely at the top of the file:
+
+```rust
+#![expect(rustdoc::redundant_explicit_links, reason = "Needed for read_doc")]
+```
+
 ## Similar crates
 
 I found three crates that allow access to doc comments on _types_ at runtime. I
@@ -118,4 +133,5 @@ additional terms or conditions.
 [macro]: https://docs.rs/read-doc/latest/read_doc/macro.module.html
 [docs.rs]: https://docs.rs/read-doc/latest/read_doc/
 [crates.io]: https://crates.io/crates/read-doc
+[`redundant_explicit_links`]: https://doc.rust-lang.org/rustdoc/lints.html#redundant_explicit_links
 [issues]: https://github.com/danielparks/read-doc/issues
