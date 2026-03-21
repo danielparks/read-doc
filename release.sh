@@ -4,7 +4,6 @@ set -eo pipefail
 shopt -s extglob
 
 version=$1
-branch_name=$(git rev-parse --abbrev-ref HEAD)
 
 awk-in-place () {
   local tmpfile=$(mktemp)
@@ -35,7 +34,17 @@ crate-names () {
   cargo metadata --format-version 1 --no-deps | jq -r '.packages[].name'
 }
 
+branch-name () {
+  git rev-parse --abbrev-ref HEAD
+}
+
 auto-pr () {
+  local branch_name="$(branch-name)"
+  if [[ "$(branch-name)" = main ]] ; then
+    echo "Cannot auto-pr on main branch." >&2
+    return 1
+  fi
+
   pr_url=$((gh pr view --json url,closed 2>/dev/null || true) \
     | jq -r 'select(.closed | not) | .url')
 
@@ -90,7 +99,7 @@ command -v parse-changelog &>/dev/null || {
   exit 1
 }
 
-if [[ "$branch_name" = main ]] ; then
+if [[ "$(branch-name)" = main ]] ; then
   git switch -c "release-$version"
 fi
 
