@@ -19,13 +19,20 @@ repos:
       - id: mixed-line-ending
         args: ["--fix=no"]
         exclude: "^target/"
-      #- id: no-commit-to-branch
+      - id: no-commit-to-branch
   - repo: https://github.com/crate-ci/typos
     rev: v1.47.2
     hooks:
       - id: typos
         args: []
         exclude: "^target/"
+  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+    rev: v1.25.2
+    hooks:
+      - id: zizmor
+        args:
+          - "--no-progress" # https://github.com/zizmorcore/zizmor/issues/582
+          - "--persona=pedantic"
   - repo: local
     hooks:
       - id: cargo clippy
